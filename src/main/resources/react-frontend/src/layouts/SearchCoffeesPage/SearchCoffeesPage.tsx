@@ -15,6 +15,7 @@ export const SearchCoffeesPage = () => {
     const [totalPages, setTotalPages] = useState(0)
     const [search, setSearch] = useState('');
     const [searchUrl, setSearchUrl] = useState('');
+    const [categorySelection, setCategorySelection] = useState('Coffee Category');
 
     useEffect(() => {
         const fetchCoffees = async () => {
@@ -24,7 +25,8 @@ export const SearchCoffeesPage = () => {
             if (searchUrl === ''){
                 url = `${baseUrl}?page=${currentPage - 1}&size=${coffeesPerPage}`;
             } else {
-                url = baseUrl + searchUrl;
+                let searchWithPage = searchUrl.replace('<pageNumber>', `${currentPage - 1}`);
+                url = baseUrl + searchWithPage;
             }
 
             const response = await fetch(url);
@@ -80,10 +82,28 @@ export const SearchCoffeesPage = () => {
     }
 
     const searchHandleChange = () => {
+        setCurrentPage(1);
         if (search === '') {
             setSearchUrl('');
         } else {
-            setSearchUrl(`/search/findByNameContaining?name=${search}&page=0&size=${coffeesPerPage}`);
+            setSearchUrl(`/search/findByNameContaining?name=${search}&page=<pageNumber>&size=${coffeesPerPage}`);
+        }
+        setCategorySelection('Coffee Category')
+    }
+
+    const categoryField = (value: string) => {
+        setCurrentPage(1);
+        if (value.toLowerCase() === 'll' ||
+            value.toLowerCase() === 'ml' ||
+            value.toLowerCase() === 'mm' ||
+            value.toLowerCase() === 'md' ||
+            value.toLowerCase() === 'dd'
+        ) {
+            setCategorySelection(value);
+            setSearchUrl(`/search/findByCategory?category=${value}&page=<pageNumber>&size=${coffeesPerPage}`);
+        } else {
+            setCategorySelection('All');
+            setSearchUrl(`?page=<pageNumber>&size=${coffeesPerPage}`);
         }
     }
 
@@ -116,35 +136,35 @@ export const SearchCoffeesPage = () => {
                                         className={'btn btn-secondary dropdown-toggle'}
                                         data-bs-toggle={'dropdown'} aria-expanded={'false'}
                                 >
-                                    Category
+                                    {categorySelection}
                                 </button>
                                 <ul className={'dropdown-menu'} aria-labelledby={'dropdownMenuButton1'}>
-                                    <li>
+                                    <li onClick={() => categoryField('All')}>
                                         <a className={'dropdown-item'} href={'#'}>
                                             All
                                         </a>
                                     </li>
-                                    <li>
+                                    <li onClick={() => categoryField('LL')}>
                                         <a className={'dropdown-item'} href={'#'}>
                                             Light
                                         </a>
                                     </li>
-                                    <li>
+                                    <li onClick={() => categoryField('ML')}>
                                         <a className={'dropdown-item'} href={'#'}>
                                             Medium Light
                                         </a>
                                     </li>
-                                    <li>
+                                    <li onClick={() => categoryField('MM')}>
                                         <a className={'dropdown-item'} href={'#'}>
                                             Medium
                                         </a>
                                     </li>
-                                    <li>
+                                    <li onClick={() => categoryField('MD')}>
                                         <a className={'dropdown-item'} href={'#'}>
                                             Medium Dark
                                         </a>
                                     </li>
-                                    <li>
+                                    <li onClick={() => categoryField('DD')}>
                                         <a className={'dropdown-item'} href={'#'}>
                                             Dark
                                         </a>
@@ -153,15 +173,28 @@ export const SearchCoffeesPage = () => {
                             </div>
                         </div>
                     </div>
-                    <div className={'mt-3'}>
-                        <h5>Number of results: ({totalAmountOfCoffees})</h5>
-                    </div>
-                    <p>
-                        {indexOfFirstCoffee + 1} to {lastItem} of {totalAmountOfCoffees} items:
-                    </p>
-                    {coffees.map(coffee => (
-                        <SearchCoffees coffee={coffee} key={coffee.id}/>
-                    ))}
+                    {totalAmountOfCoffees > 0 ?
+                        <>
+                            <div className={'mt-3'}>
+                                <h5>Number of results: ({totalAmountOfCoffees})</h5>
+                            </div>
+                            <p>
+                                {indexOfFirstCoffee + 1} to {lastItem} of {totalAmountOfCoffees} items:
+                            </p>
+                            {coffees.map(coffee => (
+                                <SearchCoffees coffee={coffee} key={coffee.id}/>
+                            ))}
+                        </>
+                    :
+                        <div className={'m-5'}>
+                            <h3>
+                                Can't find what you're looking for?
+                            </h3>
+                            <a className={'btn main-color bt-md px-4 me-md-2 fw-bold text-white'}
+                               type={'button'} href={'#'}>Macguffin Services</a>
+                        </div>
+                    }
+
                     {totalPages > 1 &&
                       <Pagination currentPage={currentPage} totalPages={totalPages} paginate={paginate}/>
                     }
