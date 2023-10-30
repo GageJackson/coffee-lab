@@ -13,11 +13,20 @@ export const SearchCoffeesPage = () => {
     const [coffeesPerPage] = useState(4);
     const [totalAmountOfCoffees, setTotalAmountOfCoffees] = useState(0);
     const [totalPages, setTotalPages] = useState(0)
+    const [search, setSearch] = useState('');
+    const [searchUrl, setSearchUrl] = useState('');
 
     useEffect(() => {
         const fetchCoffees = async () => {
             const baseUrl: string = "http://localhost:8080/api/coffees";
-            const url: string = `${baseUrl}?page=${currentPage - 1}&size=${coffeesPerPage}`;
+            let url: string = '';
+
+            if (searchUrl === ''){
+                url = `${baseUrl}?page=${currentPage - 1}&size=${coffeesPerPage}`;
+            } else {
+                url = baseUrl + searchUrl;
+            }
+
             const response = await fetch(url);
 
             if (!response.ok) {
@@ -54,7 +63,7 @@ export const SearchCoffeesPage = () => {
             setHttpError(error.message);
         })
         window.scrollTo(0,0);
-    }, [currentPage]);
+    }, [currentPage, searchUrl]);
 
     if (isLoading){
         return (
@@ -68,6 +77,14 @@ export const SearchCoffeesPage = () => {
                 <p>{httpError}</p>
             </div>
         )
+    }
+
+    const searchHandleChange = () => {
+        if (search === '') {
+            setSearchUrl('');
+        } else {
+            setSearchUrl(`/search/findByNameContaining?name=${search}&page=0&size=${coffeesPerPage}`);
+        }
     }
 
     const indexOfLastCoffee: number = currentPage * coffeesPerPage;
@@ -84,8 +101,11 @@ export const SearchCoffeesPage = () => {
                             <div className={'d-flex'}>
                                 <input className={'form-control me-2'} type={'search'}
                                        placeholder={'Search'} aria-labelledby={'Search'}
+                                       onChange={e => setSearch((e.target.value))}
                                 />
-                                <button className={'btn btn-outline-success'}>
+                                <button className={'btn btn-outline-success'}
+                                        onClick={() => searchHandleChange()}
+                                >
                                     Search
                                 </button>
                             </div>
