@@ -5,6 +5,7 @@ import {Footer} from "./layouts/NavbarAndFooter/Footer";
 import {HomePage} from "./layouts/HomePage/HomePage";
 import {SearchCoffeesPage} from "./layouts/SearchCoffeesPage/SearchCoffeesPage";
 import {Redirect, Route, Switch} from "react-router-dom";
+import {CoffeeDetailsPage} from "./layouts/CoffeeDetailsPage/CoffeeDetailsPage";
 
 export const App = () => {
   return (
@@ -21,6 +22,9 @@ export const App = () => {
                   </Route>
                   <Route path={'/search'}>
                       <SearchCoffeesPage/>
+                  </Route>
+                  <Route path={'/details/:coffeeId'}>
+                      <CoffeeDetailsPage/>
                   </Route>
               </Switch>
           </div>
