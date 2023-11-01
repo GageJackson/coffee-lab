@@ -3,11 +3,18 @@ import CoffeeModel from "../../models/CoffeeModel";
 import {SpinnerLoading} from "../Utils/SpinnerLoading";
 import {StarsReview} from "../Utils/StarsReview";
 import {CheckoutAndReviewBox} from "./Components/CheckoutAndReviewBox";
+import ReviewModel from "../../models/ReviewModel";
+import {LatestReviews} from "./Components/LatestReviews";
 
 export const CoffeeDetailsPage = () => {
     const [coffee, setCoffee] = useState<CoffeeModel>();
     const [isLoading, setIsLoading] = useState(true);
     const [httpError, setHttpError] = useState(null);
+
+    //Review States
+    const [reviews, setReviews] = useState<ReviewModel[]>([]);
+    const [totalStars, setTotalStars] = useState(0);
+    const [isLoadingReview, setIsLoadingReview] = useState(true);
 
     const coffeeId = (window.location.pathname).split('/')[2];
 
@@ -42,7 +49,51 @@ export const CoffeeDetailsPage = () => {
         })
     }, []);
 
-    if (isLoading){
+    useEffect(() => {
+        const fetchCoffeeReviews = async () => {
+            const reviewUrl: string = `http://localhost:8080/api/reviews/search/findByCoffeeId?coffeeId=${coffeeId}`;
+            const responseReviews = await fetch(reviewUrl);
+
+
+
+            if (!responseReviews.ok) {
+                throw new Error('Something went wrong!')
+            }
+
+            const responseJsonReviews = await responseReviews.json();
+            const responseData = responseJsonReviews._embedded.reviews;
+
+            const loadedReviews: ReviewModel[] = [];
+            let weightedStarReviews: number = 0;
+
+            for (const key in responseData) {
+                loadedReviews.push({
+                    id: responseData[key].id,
+                    userEmail: responseData[key].userEmail,
+                    date: responseData[key].date,
+                    rating: responseData[key].rating,
+                    coffeeId: responseData[key].coffeeId,
+                    reviewDescription: responseData[key].reviewDescription
+                });
+                weightedStarReviews = weightedStarReviews + responseData[key].rating;
+            }
+
+            if (loadedReviews) {
+                const roundedNumber = (Math.round((weightedStarReviews / loadedReviews.length) * 2) / 2).toFixed(1);
+                setTotalStars(Number(roundedNumber));
+            }
+
+            setReviews(loadedReviews);
+            setIsLoadingReview(false);
+        };
+
+        fetchCoffeeReviews().catch((error: any) => {
+            setIsLoadingReview(false);
+            setHttpError(error.message);
+        })
+    }, []);
+
+    if (isLoading || isLoadingReview){
         return (
             <SpinnerLoading/>
         )
@@ -75,12 +126,13 @@ export const CoffeeDetailsPage = () => {
                             <h2>{coffee?.name}</h2>
                             <h5 className={'text-primary'}>{coffee?.country}</h5>
                             <p className={'lead'}>{coffee?.description}</p>
-                            <StarsReview rating={2.5} size={32}/>
+                            <StarsReview rating={totalStars} size={32}/>
                         </div>
                     </div>
                     <CheckoutAndReviewBox coffee={coffee} mobile={false}/>
                 </div>
                 <hr/>
+                <LatestReviews reviews={reviews} coffeeId={coffee?.id} mobile={false}/>
             </div>
 
             {/* Mobile */}
@@ -99,11 +151,12 @@ export const CoffeeDetailsPage = () => {
                         <h2>{coffee?.name}</h2>
                         <h5 className={'text-primary'}>{coffee?.country}</h5>
                         <p className={'lead'}>{coffee?.description}</p>
-                        <StarsReview rating={2.5} size={32}/>
+                        <StarsReview rating={totalStars} size={32}/>
                     </div>
                     <CheckoutAndReviewBox coffee={coffee} mobile={true}/>
                 </div>
                 <hr/>
+                <LatestReviews reviews={reviews} coffeeId={coffee?.id} mobile={true}/>
             </div>
         </div>
     );
