@@ -1,4 +1,10 @@
+import {useOktaAuth} from "@okta/okta-react";
+import {Link} from "react-router-dom";
+
 export const Heroes = () => {
+
+    const {authState} = useOktaAuth();
+
     return (
         <div>
             {/* Desktop */}
@@ -15,7 +21,19 @@ export const Heroes = () => {
                                 Whether something new and exotic, or tried and true,
                                 we want to know what's good to you!
                             </p>
-                            <a className={'btn main-color btn-lg text-white'}>Sign up</a>
+                            {authState?.isAuthenticated ?
+                                <Link className={'btn main-color btn-lg text-white'}
+                                      type={'button'} to={'search'}
+                                >
+                                    Explore top coffees
+                                </Link>
+                                :
+                                <Link className={'btn main-color btn-lg text-white'}
+                                      type={'button'} to={'/login'}
+                                >
+                                    Sign up
+                                </Link>
+                            }
                         </div>
                     </div>
                 </div>
@@ -49,7 +67,22 @@ export const Heroes = () => {
                                 Whether something new and exotic, or tried and true,
                                 we want to know what's good to you!
                             </p>
-                            <a className={'btn main-color btn-lg text-white'}>Sign up</a>
+
+                            {authState?.isAuthenticated ?
+                                <Link className={'btn main-color btn-lg text-white'}
+                                      type={'button'} to={'search'}
+                                >
+                                    Explore top coffees
+                                </Link>
+                            :
+                                <Link className={'btn main-color btn-lg text-white'}
+                                      type={'button'} to={'/login'}
+                                >
+                                    Sign up
+                                </Link>
+                            }
+
+
                         </div>
                     </div>
 

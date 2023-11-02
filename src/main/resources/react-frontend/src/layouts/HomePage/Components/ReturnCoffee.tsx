@@ -1,5 +1,6 @@
 import React from "react";
 import CoffeeModel from "../../../models/CoffeeModel";
+import {Link} from "react-router-dom";
 
 export const ReturnCoffee: React.FC<{coffee: CoffeeModel}> = (props) => {
     return (
@@ -20,7 +21,7 @@ export const ReturnCoffee: React.FC<{coffee: CoffeeModel}> = (props) => {
                 }
                 <h6 className={'mt-2'}>{props.coffee.name}</h6>
                 <p>{props.coffee.country}</p>
-                <a className={'btn main-color text-white'} href={'#'}>Buy</a>
+                <Link className={'btn main-color text-white'} to={`details/${props.coffee.id}`}>Buy</Link>
             </div>
         </div>
     );

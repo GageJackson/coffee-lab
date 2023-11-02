@@ -1,4 +1,10 @@
+import {Link} from "react-router-dom";
+import {useOktaAuth} from "@okta/okta-react";
+
 export const MacguffinServices = () => {
+
+    const {authState} = useOktaAuth();
+
     return (
         <div className={'container my-5'}>
             <div className={'row p-4 align-items-center border shadow-lg'}>
@@ -11,9 +17,19 @@ export const MacguffinServices = () => {
                         please reach out and we can see what we can do for you!
                     </p>
                     <div className={'d-grid gap-2 justify-content-md-start mb4 mb-lg-3'}>
-                        <a className={'btn main-color btn-lg text-white'} href={'#'}>
-                            Sign up
-                        </a>
+                        {authState?.isAuthenticated ?
+                            <Link className={'btn main-color btn-lg text-white'}
+                                  type={'button'} to={'#'}
+                            >
+                                Macguffin Services
+                            </Link>
+                            :
+                            <Link className={'btn main-color btn-lg text-white'}
+                                  type={'button'} to={'/login'}
+                            >
+                                Sign up
+                            </Link>
+                        }
                     </div>
                 </div>
                 <div className={'col-lg-4 offset-lg-1 lost-image'}></div>
