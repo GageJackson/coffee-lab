@@ -23,7 +23,7 @@ public class CoffeeController {
         return coffeeService.checkoutCoffee(userEmail, coffeeId);
     }
 
-    @GetMapping("/secure/isCheckedOut/byUser")
+    @GetMapping("/secure/ischeckedout/byUser")
     public Boolean checkoutCoffeeByUser (@RequestParam Long coffeeId){
         String userEmail = "testuser@email.com";
         return coffeeService.checkoutCoffeeByUser(userEmail, coffeeId);
