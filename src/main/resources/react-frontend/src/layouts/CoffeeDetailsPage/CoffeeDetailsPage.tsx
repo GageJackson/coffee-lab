@@ -5,8 +5,14 @@ import {StarsReview} from "../Utils/StarsReview";
 import {CheckoutAndReviewBox} from "./Components/CheckoutAndReviewBox";
 import ReviewModel from "../../models/ReviewModel";
 import {LatestReviews} from "./Components/LatestReviews";
+import {useOktaAuth} from "@okta/okta-react";
+import {Simulate} from "react-dom/test-utils";
+import error = Simulate.error;
 
 export const CoffeeDetailsPage = () => {
+
+    const {authState} = useOktaAuth();
+
     const [coffee, setCoffee] = useState<CoffeeModel>();
     const [isLoading, setIsLoading] = useState(true);
     const [httpError, setHttpError] = useState(null);
@@ -15,6 +21,14 @@ export const CoffeeDetailsPage = () => {
     const [reviews, setReviews] = useState<ReviewModel[]>([]);
     const [totalStars, setTotalStars] = useState(0);
     const [isLoadingReview, setIsLoadingReview] = useState(true);
+
+    //Loans Count State
+    const [currentLoansCount, setCurrentLoansCount] = useState(0);
+    const [isLoadingCurrentLoansCount, setIsLoadingCurrentLoansCount] = useState(true);
+
+    // Is coffee checked out
+    const [isCoffeeCheckedOut, setIsCoffeeCheckedOut] = useState(false);
+    const [isLoadingCoffeeCheckedOut, setIsLoadingCoffeeCheckedOut] = useState(true);
 
     const coffeeId = (window.location.pathname).split('/')[2];
 
@@ -54,8 +68,6 @@ export const CoffeeDetailsPage = () => {
             const reviewUrl: string = `http://localhost:8080/api/reviews/search/findByCoffeeId?coffeeId=${coffeeId}`;
             const responseReviews = await fetch(reviewUrl);
 
-
-
             if (!responseReviews.ok) {
                 throw new Error('Something went wrong!')
             }
@@ -93,7 +105,67 @@ export const CoffeeDetailsPage = () => {
         })
     }, []);
 
-    if (isLoading || isLoadingReview){
+    useEffect(() => {
+        const fetchUserCurrentLoansCount = async () => {
+            if (authState && authState.isAuthenticated) {
+                const url = `http://localhost:8080/api/coffees/secure/currentLoans/count`;
+                const requestOptions = {
+                    method: 'GET',
+                    headers: {
+                        Authorization: `Bearer ${authState.accessToken?.accessToken}`,
+                        'Content-type': 'application/json'
+                    }
+                };
+                const currentLoansCountResponse = await fetch(url, requestOptions);
+                if (!currentLoansCountResponse.ok) {
+                    throw new Error('Something went wrong!');
+                }
+                const currentLoansCountResponseJson = await currentLoansCountResponse.json();
+                setCurrentLoansCount(currentLoansCountResponseJson);
+            }
+            setIsLoadingCurrentLoansCount(false);
+        }
+        fetchUserCurrentLoansCount().catch((error: any) => {
+            setIsLoadingCurrentLoansCount(false);
+            setHttpError(error.message);
+        })
+    }, [authState]);
+
+    useEffect(() => {
+        const fetchUserCheckedOutCoffee = async () => {
+            if (authState && authState.isAuthenticated) {
+                console.log("1")
+                const url = `http://localhost:8080/api/coffees/secure/isCheckedOut/byUser/?coffeeId=${coffeeId}`;
+                const requestOptions = {
+                    method: 'GET',
+                    headers: {
+                        Authorization: `Bearer ${authState.accessToken?.accessToken}`,
+                        'Content-type': 'application/json'
+                    }
+                };
+                console.log("2")
+                const coffeeCheckedOut = await  fetch(url, requestOptions);
+                console.log("3")
+                if (!coffeeCheckedOut.ok) {
+                    console.log("3b")
+                    console.error(`Fetch error: ${coffeeCheckedOut.status} - ${coffeeCheckedOut.statusText}`);
+                    throw new Error('Something went wrong!');
+                }
+                console.log("4")
+                const coffeeCheckedOutResponseJson = await coffeeCheckedOut.json();
+
+
+                setIsCoffeeCheckedOut(coffeeCheckedOutResponseJson);
+            }
+            setIsLoadingCoffeeCheckedOut(false);
+        }
+        fetchUserCheckedOutCoffee().catch((error: any) => {
+            setIsLoadingCoffeeCheckedOut(false);
+            setHttpError(error.message);
+        })
+    }, [authState]);
+
+    if (isLoading || isLoadingReview || isLoadingCurrentLoansCount || isLoadingCoffeeCheckedOut){
         return (
             <SpinnerLoading/>
         )
@@ -129,7 +201,7 @@ export const CoffeeDetailsPage = () => {
                             <StarsReview rating={totalStars} size={32}/>
                         </div>
                     </div>
-                    <CheckoutAndReviewBox coffee={coffee} mobile={false}/>
+                    <CheckoutAndReviewBox coffee={coffee} mobile={false} currentLoansCount={currentLoansCount}/>
                 </div>
                 <hr/>
                 <LatestReviews reviews={reviews} coffeeId={coffee?.id} mobile={false}/>
@@ -153,7 +225,7 @@ export const CoffeeDetailsPage = () => {
                         <p className={'lead'}>{coffee?.description}</p>
                         <StarsReview rating={totalStars} size={32}/>
                     </div>
-                    <CheckoutAndReviewBox coffee={coffee} mobile={true}/>
+                    <CheckoutAndReviewBox coffee={coffee} mobile={true} currentLoansCount={currentLoansCount}/>
                 </div>
                 <hr/>
                 <LatestReviews reviews={reviews} coffeeId={coffee?.id} mobile={true}/>
