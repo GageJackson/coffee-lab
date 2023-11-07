@@ -26,7 +26,6 @@ public class Checkout {
     private Long coffeeId;
 
     public Checkout (){}
-    public Checkout (String userEmail){}
 
     public Checkout(String userEmail, String checkoutDate, String returnDate, Long coffeeId){
         this.userEmail = userEmail;

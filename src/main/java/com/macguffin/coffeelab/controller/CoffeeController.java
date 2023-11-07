@@ -2,6 +2,7 @@ package com.macguffin.coffeelab.controller;
 
 import com.macguffin.coffeelab.entity.Coffee;
 import com.macguffin.coffeelab.service.CoffeeService;
+import com.macguffin.coffeelab.utils.ExtractJWT;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,20 +19,22 @@ public class CoffeeController {
     }
 
     @PutMapping("/secure/checkout")
-    public Coffee checkoutCoffee (@RequestParam Long coffeeId) throws Exception {
-        String userEmail = "testuser@email.com";
+    public Coffee checkoutCoffee (@RequestHeader(value = "Authorization") String token,
+                                  @RequestParam Long coffeeId) throws Exception {
+        String userEmail = ExtractJWT.payloadJWTExtraction(token, "\"sub\"");
         return coffeeService.checkoutCoffee(userEmail, coffeeId);
     }
 
     @GetMapping("/secure/isCheckedOut/byUser")
-    public Boolean checkoutCoffeeByUser (@RequestParam Long coffeeId){
-        String userEmail = "testuser@email.com";
+    public Boolean checkoutCoffeeByUser (@RequestHeader(value = "Authorization") String token,
+                                         @RequestParam Long coffeeId){
+        String userEmail = ExtractJWT.payloadJWTExtraction(token, "\"sub\"");
         return coffeeService.checkoutCoffeeByUser(userEmail, coffeeId);
     }
 
     @GetMapping("/secure/currentLoans/count")
-    public int currentLoansCount (){
-        String userEmail = "testuser@email.com";
+    public int currentLoansCount (@RequestHeader(value = "Authorization") String token){
+        String userEmail = ExtractJWT.payloadJWTExtraction(token, "\"sub\"");
         return coffeeService.currentLoansCount(userEmail);
     }
 }
