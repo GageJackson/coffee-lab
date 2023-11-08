@@ -134,8 +134,7 @@ export const CoffeeDetailsPage = () => {
     useEffect(() => {
         const fetchUserCheckedOutCoffee = async () => {
             if (authState && authState.isAuthenticated) {
-                console.log("1")
-                const url = `http://localhost:8080/api/coffees/secure/isCheckedOut/byUser/?coffeeId=${coffeeId}`;
+                const url = `http://localhost:8080/api/coffees/secure/isCheckedOut/byUser?coffeeId=${coffeeId}`;
                 const requestOptions = {
                     method: 'GET',
                     headers: {
@@ -143,17 +142,13 @@ export const CoffeeDetailsPage = () => {
                         'Content-type': 'application/json'
                     }
                 };
-                console.log("2")
                 const coffeeCheckedOut = await  fetch(url, requestOptions);
-                console.log("3")
                 if (!coffeeCheckedOut.ok) {
                     console.log("3b")
                     console.error(`Fetch error: ${coffeeCheckedOut.status} - ${coffeeCheckedOut.statusText}`);
                     throw new Error('Something went wrong!');
                 }
-                console.log("4")
                 const coffeeCheckedOutResponseJson = await coffeeCheckedOut.json();
-
 
                 setIsCoffeeCheckedOut(coffeeCheckedOutResponseJson);
             }
