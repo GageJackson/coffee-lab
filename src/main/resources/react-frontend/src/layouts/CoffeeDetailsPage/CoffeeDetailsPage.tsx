@@ -144,8 +144,6 @@ export const CoffeeDetailsPage = () => {
                 };
                 const coffeeCheckedOut = await  fetch(url, requestOptions);
                 if (!coffeeCheckedOut.ok) {
-                    console.log("3b")
-                    console.error(`Fetch error: ${coffeeCheckedOut.status} - ${coffeeCheckedOut.statusText}`);
                     throw new Error('Something went wrong!');
                 }
                 const coffeeCheckedOutResponseJson = await coffeeCheckedOut.json();

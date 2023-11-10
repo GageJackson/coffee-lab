@@ -3,7 +3,8 @@ import CoffeeModel from "../../../models/CoffeeModel";
 import {Link} from "react-router-dom";
 
 export const CheckoutAndReviewBox: React.FC<{coffee: CoffeeModel | undefined,
-    mobile: boolean, currentLoansCount: number}> = (props) => {
+    mobile: boolean, currentLoansCount: number, isAuthentication: any, isCheckedOut: boolean
+}> = (props) => {
     return (
         <div className={props.mobile ? 'card d-flex mt-5' : 'card col-3 container d-flex mb-5'}>
             <div className={'card-body container'}>
