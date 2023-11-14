@@ -11,7 +11,7 @@ export const CheckoutAndReviewBox: React.FC<{coffee: CoffeeModel | undefined,
                 <div className={'mt-3'}>
                     <p>
                         <b>{props.currentLoansCount}/5 </b>
-                        Coffees in cart
+                        Coffees in cart.
                     </p>
                     <hr/>
                     {props.coffee && props.coffee.copiesAvailable && props.coffee.copiesAvailable > 0 ?
