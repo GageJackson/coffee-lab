@@ -61,7 +61,7 @@ export const CoffeeDetailsPage = () => {
             setIsLoading(false);
             setHttpError(error.message);
         })
-    }, []);
+    }, [isCoffeeCheckedOut]);
 
     useEffect(() => {
         const fetchCoffeeReviews = async () => {
@@ -129,7 +129,7 @@ export const CoffeeDetailsPage = () => {
             setIsLoadingCurrentLoansCount(false);
             setHttpError(error.message);
         })
-    }, [authState]);
+    }, [authState, isCoffeeCheckedOut]);
 
     useEffect(() => {
         const fetchUserCheckedOutCoffee = async () => {
@@ -172,6 +172,23 @@ export const CoffeeDetailsPage = () => {
         )
     }
 
+    async function checkoutCoffee() {
+        const url = `http://localhost:8080/api/coffees/secure/checkout?coffeeId=${coffee?.id}`;
+        const requestOptions = {
+            method: 'PUT',
+            headers: {
+                Authorization: `Bearer ${authState?.accessToken?.accessToken}`,
+                'Content-Type': 'application/json'
+            }
+        };
+        const checkoutResponse = await fetch(url, requestOptions);
+        console.log(checkoutResponse)
+        if (!checkoutResponse.ok) {
+            throw new Error('Something went wrong!');
+        }
+        setIsCoffeeCheckedOut(true);
+    }
+
     return (
         <div>
             {/* Desktop */}
@@ -194,7 +211,10 @@ export const CoffeeDetailsPage = () => {
                             <StarsReview rating={totalStars} size={32}/>
                         </div>
                     </div>
-                    <CheckoutAndReviewBox coffee={coffee} mobile={false} currentLoansCount={currentLoansCount}/>
+                    <CheckoutAndReviewBox coffee={coffee} mobile={false} currentLoansCount={currentLoansCount}
+                                          isAuthenticated={authState?.isAuthenticated} isCheckedOut={isCoffeeCheckedOut}
+                                          checkoutCoffee={checkoutCoffee}
+                    />
                 </div>
                 <hr/>
                 <LatestReviews reviews={reviews} coffeeId={coffee?.id} mobile={false}/>
@@ -218,7 +238,10 @@ export const CoffeeDetailsPage = () => {
                         <p className={'lead'}>{coffee?.description}</p>
                         <StarsReview rating={totalStars} size={32}/>
                     </div>
-                    <CheckoutAndReviewBox coffee={coffee} mobile={true} currentLoansCount={currentLoansCount}/>
+                    <CheckoutAndReviewBox coffee={coffee} mobile={true} currentLoansCount={currentLoansCount}
+                                          isAuthenticated={authState?.isAuthenticated} isCheckedOut={isCoffeeCheckedOut}
+                                          checkoutCoffee={checkoutCoffee}
+                    />
                 </div>
                 <hr/>
                 <LatestReviews reviews={reviews} coffeeId={coffee?.id} mobile={true}/>
