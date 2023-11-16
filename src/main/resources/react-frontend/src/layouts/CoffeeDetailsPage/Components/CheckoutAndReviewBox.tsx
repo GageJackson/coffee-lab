@@ -1,10 +1,11 @@
 import React from "react";
 import CoffeeModel from "../../../models/CoffeeModel";
 import {Link} from "react-router-dom";
+import {LeaveAReview} from "../../Utils/LeaveAReview";
 
 export const CheckoutAndReviewBox: React.FC<{coffee: CoffeeModel | undefined,
     mobile: boolean, currentLoansCount: number, isAuthenticated: any,
-    isCheckedOut: boolean, checkoutCoffee: any
+    isCheckedOut: boolean, checkoutCoffee: any, isReviewLeft: boolean
 }> = (props) => {
 
     function buttonRender() {
@@ -32,6 +33,27 @@ export const CheckoutAndReviewBox: React.FC<{coffee: CoffeeModel | undefined,
         }
         return (
             <Link to={'/login'} className={'btn btn-success btn-lg'}> Sign in </Link>
+        )
+    }
+
+    function reviewRender() {
+        if (props.isAuthenticated && !props.isReviewLeft) {
+            return (
+                <LeaveAReview/>
+            )
+        } else if (props.isAuthenticated && props.isReviewLeft) {
+            return (
+                <p>
+                    <b>Thank you for your review!</b>
+                </p>
+            )
+        }
+
+        return (
+            <div>
+                <hr/>
+                <p>Sign in to be able to leave a review</p>
+            </div>
         )
     }
 
@@ -65,9 +87,7 @@ export const CheckoutAndReviewBox: React.FC<{coffee: CoffeeModel | undefined,
                 <p className={'mt-3'}>
                     This number can change until placing an order has been complete
                 </p>
-                <p>
-                    Sign in to be able to leave a review
-                </p>
+                {reviewRender()}
             </div>
         </div>
     );

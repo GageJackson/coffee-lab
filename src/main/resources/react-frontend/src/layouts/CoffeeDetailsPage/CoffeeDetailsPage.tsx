@@ -22,6 +22,9 @@ export const CoffeeDetailsPage = () => {
     const [totalStars, setTotalStars] = useState(0);
     const [isLoadingReview, setIsLoadingReview] = useState(true);
 
+    const [isReviewLeft, setIsReviewLeft] = useState(false);
+    const [isLoadingUserReview, setIsLoadingUserReview] = useState(true);
+
     //Loans Count State
     const [currentLoansCount, setCurrentLoansCount] = useState(0);
     const [isLoadingCurrentLoansCount, setIsLoadingCurrentLoansCount] = useState(true);
@@ -103,7 +106,7 @@ export const CoffeeDetailsPage = () => {
             setIsLoadingReview(false);
             setHttpError(error.message);
         })
-    }, []);
+    }, [isReviewLeft]);
 
     useEffect(() => {
         const fetchUserCurrentLoansCount = async () => {
@@ -158,7 +161,35 @@ export const CoffeeDetailsPage = () => {
         })
     }, [authState]);
 
-    if (isLoading || isLoadingReview || isLoadingCurrentLoansCount || isLoadingCoffeeCheckedOut){
+    useEffect(() => {
+       const fetchUserReviewCoffee = async () => {
+            if (authState && authState.isAuthenticated) {
+                const url = `http://localhost:8080/api/reviews/secure/user/coffee?coffeeId=${coffeeId}`
+                const requestOptions = {
+                    method: 'GET',
+                    headers: {
+                        Authorization: `Bearer ${authState.accessToken?.accessToken}`,
+                        'Content-type': 'application/json'
+                    }
+                };
+                const userReview = await  fetch(url, requestOptions);
+                if (!userReview.ok) {
+                    throw new Error('Something went wrong!');
+                }
+                const userReviewResponseJson = await userReview.json();
+                setIsReviewLeft(userReviewResponseJson);
+            }
+
+           setIsLoadingUserReview(false);
+       }
+       fetchUserReviewCoffee().catch((error: any) => {
+           setIsLoadingUserReview(false);
+           setHttpError(error.message);
+        })
+    }, [authState]);
+
+    if (isLoading || isLoadingReview || isLoadingCurrentLoansCount
+        || isLoadingCoffeeCheckedOut || isLoadingUserReview){
         return (
             <SpinnerLoading/>
         )
@@ -213,7 +244,7 @@ export const CoffeeDetailsPage = () => {
                     </div>
                     <CheckoutAndReviewBox coffee={coffee} mobile={false} currentLoansCount={currentLoansCount}
                                           isAuthenticated={authState?.isAuthenticated} isCheckedOut={isCoffeeCheckedOut}
-                                          checkoutCoffee={checkoutCoffee}
+                                          checkoutCoffee={checkoutCoffee} isReviewLeft={isReviewLeft}
                     />
                 </div>
                 <hr/>
@@ -240,7 +271,7 @@ export const CoffeeDetailsPage = () => {
                     </div>
                     <CheckoutAndReviewBox coffee={coffee} mobile={true} currentLoansCount={currentLoansCount}
                                           isAuthenticated={authState?.isAuthenticated} isCheckedOut={isCoffeeCheckedOut}
-                                          checkoutCoffee={checkoutCoffee}
+                                          checkoutCoffee={checkoutCoffee} isReviewLeft={isReviewLeft}
                     />
                 </div>
                 <hr/>
