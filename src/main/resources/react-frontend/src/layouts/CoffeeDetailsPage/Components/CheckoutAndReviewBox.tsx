@@ -44,7 +44,7 @@ export const CheckoutAndReviewBox: React.FC<{coffee: CoffeeModel | undefined,
         } else if (props.isAuthenticated && props.isReviewLeft) {
             return (
                 <p>
-                    <b>Thank you for your review!</b>
+                    <b>Thank you for your review!!</b>
                 </p>
             )
         }
