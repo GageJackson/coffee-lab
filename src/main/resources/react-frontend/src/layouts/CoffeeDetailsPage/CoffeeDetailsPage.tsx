@@ -8,6 +8,7 @@ import {LatestReviews} from "./Components/LatestReviews";
 import {useOktaAuth} from "@okta/okta-react";
 import {Simulate} from "react-dom/test-utils";
 import error = Simulate.error;
+import ReviewRequestModel from "../../models/ReviewRequestModel";
 
 export const CoffeeDetailsPage = () => {
 
@@ -218,6 +219,30 @@ export const CoffeeDetailsPage = () => {
             throw new Error('Something went wrong!');
         }
         setIsCoffeeCheckedOut(true);
+    }
+
+    async function submitReview (starInput: number, reviewDescription: string) {
+        let coffeeId: number = 0;
+        if (coffee?.id) {
+            coffeeId = coffee.id;
+        }
+
+        const reviewRequestModel = new ReviewRequestModel(starInput, coffeeId, reviewDescription);
+        const url = `http://localhost:8080/api/reviews/secure`;
+        const requestOptions = {
+            method: 'POST',
+            headers: {
+                Authorization: `Bearer ${authState?.accessToken?.accessToken}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(reviewRequestModel)
+        };
+
+        const returnResponse = await fetch(url, requestOptions);
+        if (!returnResponse.ok) {
+            throw new Error('Something went wrong!');
+        }
+        setIsReviewLeft(true);
     }
 
     return (
