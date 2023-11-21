@@ -270,6 +270,7 @@ export const CoffeeDetailsPage = () => {
                     <CheckoutAndReviewBox coffee={coffee} mobile={false} currentLoansCount={currentLoansCount}
                                           isAuthenticated={authState?.isAuthenticated} isCheckedOut={isCoffeeCheckedOut}
                                           checkoutCoffee={checkoutCoffee} isReviewLeft={isReviewLeft}
+                                          submitReview={submitReview}
                     />
                 </div>
                 <hr/>
@@ -297,6 +298,7 @@ export const CoffeeDetailsPage = () => {
                     <CheckoutAndReviewBox coffee={coffee} mobile={true} currentLoansCount={currentLoansCount}
                                           isAuthenticated={authState?.isAuthenticated} isCheckedOut={isCoffeeCheckedOut}
                                           checkoutCoffee={checkoutCoffee} isReviewLeft={isReviewLeft}
+                                          submitReview={submitReview}
                     />
                 </div>
                 <hr/>
