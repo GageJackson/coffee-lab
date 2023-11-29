@@ -48,4 +48,18 @@ public class CoffeeController {
         String userEmail = ExtractJWT.payloadJWTExtraction(token, "\"sub\"");
         return coffeeService.currentLoans(userEmail);
     }
+
+    @PutMapping("/secure/return")
+    public void returnCoffee(@RequestHeader(value = "Authorization") String token,
+                             @RequestParam Long coffeeId) throws Exception{
+        String userEmail = ExtractJWT.payloadJWTExtraction(token, "\"sub\"");
+        coffeeService.returnCoffee(userEmail, coffeeId);
+    }
+
+    @PutMapping("/secure/renew")
+    public void renewLoan(@RequestHeader(value = "Authorization") String token,
+                             @RequestParam Long coffeeId) throws Exception{
+        String userEmail = ExtractJWT.payloadJWTExtraction(token, "\"sub\"");
+        coffeeService.renewLoan(userEmail, coffeeId);
+    }
 }

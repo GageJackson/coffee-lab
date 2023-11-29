@@ -93,4 +93,36 @@ public class CoffeeService {
 
         return shelfCurrentLoansResponses;
     }
+
+    public void returnCoffee (String userEmail, Long coffeeId) throws Exception{
+        Optional<Coffee> coffee = coffeeRepository.findById(coffeeId);
+
+        Checkout validateCheckout = checkoutRepository.findByUserEmailAndCoffeeId(userEmail, coffeeId);
+
+        if (!coffee.isPresent() || validateCheckout == null) {
+            throw new Exception("Coffee does not exist or not checked out by user");
+        }
+
+        coffee.get().setCopiesAvailable(coffee.get().getCopiesAvailable() + 1);
+
+        coffeeRepository.save(coffee.get());
+        checkoutRepository.deleteById(validateCheckout.getId());
+    }
+
+    public void renewLoan (String userEmail, Long coffeeId) throws Exception{
+        Checkout validateCheckout = checkoutRepository.findByUserEmailAndCoffeeId(userEmail, coffeeId);
+
+        if (validateCheckout == null) {
+            throw new Exception("Coffee does not exist or not checked out by user");
+        }
+
+        SimpleDateFormat sdf = new SimpleDateFormat("yyy-MM-dd");
+        Date d1 = sdf.parse(validateCheckout.getReturnDate());
+        Date d2 = sdf.parse(LocalDate.now().toString());
+
+        if (d1.compareTo(d2) > 0 || d1.compareTo(d2) == 0) {
+            validateCheckout.setReturnDate(LocalDate.now().plusDays(7).toString());
+            checkoutRepository.save(validateCheckout);
+        }
+    }
 }

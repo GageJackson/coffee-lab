@@ -3,6 +3,7 @@ import {useEffect, useState} from "react";
 import ShelfCurrentLoans from "../../../models/ShelfCurrentLoans";
 import {SpinnerLoading} from "../../Utils/SpinnerLoading";
 import {Link} from "react-router-dom";
+import {LoansModal} from "./LoansModal";
 
 export const Loans = () => {
     const {authState} = useOktaAuth();
@@ -11,6 +12,7 @@ export const Loans = () => {
     //Current Loans
     const  [shelfCurrentLoans, setShelfCurrentLoans] = useState<ShelfCurrentLoans[]>([]);
     const [isLoadingUserLoans, setIsLoadingUserLoans] =useState(true);
+    const [checkout, setCheckout] = useState(false);
 
     useEffect(() => {
         const fetchUserCurrentLoans = async () => {
@@ -37,7 +39,7 @@ export const Loans = () => {
             setHttpError(error.message);
         })
         window.scrollTo(0,0);
-    }, [authState]);
+    }, [authState, checkout]);
 
     if (isLoadingUserLoans) {
         return (
@@ -53,6 +55,40 @@ export const Loans = () => {
                 </p>
             </div>
         );
+    }
+
+    async function returnCoffee(coffeeId: number) {
+        const url = `http://localhost:8080/api/coffees/secure/return?coffeeId=${coffeeId}`;
+        const requestOptions = {
+            method: 'PUT',
+            headers: {
+                Authorization: `Bearer ${authState?.accessToken?.accessToken}`,
+                'Content-Type': 'application/json'
+            }
+        };
+
+        const returnResponse = await fetch(url, requestOptions);
+        if (!returnResponse.ok) {
+            throw new Error('Something went wrong!');
+        }
+        setCheckout(!checkout);
+    }
+
+    async function renewLoan(coffeeId: number) {
+        const url = `http://localhost:8080/api/coffees/secure/renew?coffeeId=${coffeeId}`;
+        const requestOptions = {
+            method: 'PUT',
+            headers: {
+                Authorization: `Bearer ${authState?.accessToken?.accessToken}`,
+                'Content-Type': 'application/json'
+            }
+        };
+
+        const returnResponse = await fetch(url, requestOptions);
+        if (!returnResponse.ok) {
+            throw new Error('Something went wrong!');
+        }
+        setCheckout(!checkout);
     }
 
     return (
@@ -113,6 +149,7 @@ export const Loans = () => {
                             </div>
                         </div>
                         <hr/>
+                        <LoansModal shelfCurrentLoans={shelfCurrentLoans} mobile={false} returnCoffee={returnCoffee} renewLoan={renewLoan}/>
                     </div>
                     ))}
                 </>
@@ -180,6 +217,7 @@ export const Loans = () => {
                                         </div>
                                     </div>
                                 <hr/>
+                                <LoansModal shelfCurrentLoans={shelfCurrentLoans} mobile={true} returnCoffee={returnCoffee} renewLoan={renewLoan}/>
                             </div>
                         ))}
                     </>

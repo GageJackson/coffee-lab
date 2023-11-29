@@ -1,7 +1,8 @@
 import React from "react";
 import ShelfCurrentLoans from "../../../models/ShelfCurrentLoans";
 
-export const LoansModal: React.FC<{shelfCurrentLoans: ShelfCurrentLoans, mobile: boolean}> = (props) => {
+export const LoansModal: React.FC<{shelfCurrentLoans: ShelfCurrentLoans,
+    mobile: boolean, returnCoffee: any, renewLoan: any}> = (props) => {
     return(
         <div className={'modal fade'} key={props.shelfCurrentLoans.coffee.id}
              id={props.mobile ? `mobilemodal${props.shelfCurrentLoans.coffee.id}`
@@ -52,15 +53,20 @@ export const LoansModal: React.FC<{shelfCurrentLoans: ShelfCurrentLoans, mobile:
                                     </p>
                                 }
                                 <div className={'list-group mt-3'}>
-                                    <button className={'list-group-itm list-group-item-action'}
+                                    <button className={'list-group-item list-group-item-action'}
                                             data-bs-dismiss={'modal'} aria-current={'true'}
+                                            onClick={() => props.returnCoffee(props.shelfCurrentLoans.coffee.id)}
                                     >
-                                        Return Book
+                                        Return Coffee
                                     </button>
                                     <button className={props.shelfCurrentLoans.daysLeft < 0 ?
-                                            'list-group-itm list-group-item-action active'
-                                            : 'list-group-itm list-group-item-action'}
+                                            'list-group-item list-group-item-action active'
+                                            : 'list-group-item list-group-item-action'}
                                             data-bs-dismiss={'modal'}
+                                            onClick={props.shelfCurrentLoans.daysLeft < 0 ?
+                                                (event) => event.preventDefault()
+                                                :
+                                                () => props.renewLoan(props.shelfCurrentLoans.coffee.id)}
                                     >
                                         {props.shelfCurrentLoans.daysLeft < 0 ?
                                         'Late dues cannot be renewed' : 'Renew loan for 7 days'
