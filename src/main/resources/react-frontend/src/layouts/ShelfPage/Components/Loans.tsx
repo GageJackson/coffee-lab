@@ -38,6 +38,7 @@ export const Loans = () => {
             setIsLoadingUserLoans(false);
             setHttpError(error.message);
         })
+        console.log(shelfCurrentLoans)
         window.scrollTo(0,0);
     }, [authState, checkout]);
 

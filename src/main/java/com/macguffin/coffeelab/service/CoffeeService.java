@@ -2,8 +2,10 @@ package com.macguffin.coffeelab.service;
 
 import com.macguffin.coffeelab.dao.CheckoutRepository;
 import com.macguffin.coffeelab.dao.CoffeeRepository;
+import com.macguffin.coffeelab.dao.HistoryRepository;
 import com.macguffin.coffeelab.entity.Checkout;
 import com.macguffin.coffeelab.entity.Coffee;
+import com.macguffin.coffeelab.entity.History;
 import com.macguffin.coffeelab.responsemodels.ShelfCurrentLoansResponse;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,9 +25,12 @@ public class CoffeeService {
     private CoffeeRepository coffeeRepository;
     private CheckoutRepository checkoutRepository;
 
-    public CoffeeService(CoffeeRepository coffeeRepository, CheckoutRepository checkoutRepository) {
+    private HistoryRepository historyRepository;
+
+    public CoffeeService(CoffeeRepository coffeeRepository, CheckoutRepository checkoutRepository, HistoryRepository historyRepository) {
         this.coffeeRepository = coffeeRepository;
         this.checkoutRepository = checkoutRepository;
+        this.historyRepository = historyRepository;
     }
 
     public Coffee checkoutCoffee (String userEmail, Long coffeeId) throws Exception {
@@ -107,6 +112,18 @@ public class CoffeeService {
 
         coffeeRepository.save(coffee.get());
         checkoutRepository.deleteById(validateCheckout.getId());
+
+        History history = new History(
+                userEmail,
+                validateCheckout.getCheckoutDate(),
+                LocalDate.now().toString(),
+                coffee.get().getName(),
+                coffee.get().getCountry(),
+                coffee.get().getDescription(),
+                coffee.get().getImg()
+        );
+
+        historyRepository.save(history);
     }
 
     public void renewLoan (String userEmail, Long coffeeId) throws Exception{
