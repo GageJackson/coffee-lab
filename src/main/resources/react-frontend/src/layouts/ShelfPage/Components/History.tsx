@@ -40,7 +40,6 @@ export const History = () => {
             setIsLoadingHistory(false);
             setHttpError(error.message);
         })
-        console.log(histories)
     }, [authState, currentPage])
 
     if (isLoadingHistory) {

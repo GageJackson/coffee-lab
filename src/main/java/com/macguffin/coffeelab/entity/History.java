@@ -4,25 +4,32 @@ import jakarta.persistence.*;
 import lombok.Data;
 
 @Entity
-@Table(name = "history")
+@Table(name = "History")
 @Data
 public class History {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Long id;
+
     @Column(name = "user_email")
     private String userEmail;
+
     @Column(name = "checkout_date")
     private String checkoutDate;
+
     @Column(name = "returned_date")
     private String returnedDate;
+
     @Column(name = "name")
     private String name;
+
     @Column(name = "country")
     private String country;
+
     @Column(name = "description")
     private String description;
+
     @Column(name = "img")
     private String img;
 
