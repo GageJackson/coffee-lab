@@ -1,6 +1,7 @@
 package com.macguffin.coffeelab.controller;
 
 import com.macguffin.coffeelab.entity.Coffee;
+import com.macguffin.coffeelab.entity.History;
 import com.macguffin.coffeelab.responsemodels.ShelfCurrentLoansResponse;
 import com.macguffin.coffeelab.service.CoffeeService;
 import com.macguffin.coffeelab.utils.ExtractJWT;
@@ -61,5 +62,13 @@ public class CoffeeController {
                              @RequestParam Long coffeeId) throws Exception{
         String userEmail = ExtractJWT.payloadJWTExtraction(token, "\"sub\"");
         coffeeService.renewLoan(userEmail, coffeeId);
+    }
+
+    @GetMapping("/secure/histories")
+    public List<History> getHistories(@RequestHeader(value = "Authorization") String token)
+            throws Exception
+    {
+        String userEmail = ExtractJWT.payloadJWTExtraction(token, "\"sub\"");
+        return coffeeService.getHistories(userEmail);
     }
 }

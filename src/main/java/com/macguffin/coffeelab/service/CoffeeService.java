@@ -24,7 +24,6 @@ public class CoffeeService {
 
     private CoffeeRepository coffeeRepository;
     private CheckoutRepository checkoutRepository;
-
     private HistoryRepository historyRepository;
 
     public CoffeeService(CoffeeRepository coffeeRepository, CheckoutRepository checkoutRepository, HistoryRepository historyRepository) {
@@ -141,5 +140,15 @@ public class CoffeeService {
             validateCheckout.setReturnDate(LocalDate.now().plusDays(7).toString());
             checkoutRepository.save(validateCheckout);
         }
+    }
+
+    public List<History> getHistories(String userEmail) throws Exception{
+        List<History> histories = historyRepository.findHistoryByUserEmail(userEmail);
+
+        if (histories == null) {
+            throw new Exception("No histories");
+        }
+
+        return histories;
     }
 }

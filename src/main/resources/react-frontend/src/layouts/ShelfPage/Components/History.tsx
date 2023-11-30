@@ -10,7 +10,10 @@ export const History = () => {
     const [isLoadingHistory, setIsLoadingHistory] = useState(true);
     const [httpError, setHttpError] = useState(null);
 
+    //Histories
     const [histories, setHistories] = useState<HistoryModel[]>([])
+
+    //Pagination
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPages, setTotalPages] = useState(0);
 
@@ -30,7 +33,6 @@ export const History = () => {
                 }
                 const historyResponseJson = await historyResponse.json();
 
-                console.log(historyResponseJson)
                 setHistories(historyResponseJson._embedded.histories);
                 setTotalPages(historyResponseJson.page.totalPages);
             }
@@ -62,8 +64,8 @@ export const History = () => {
                 <>
                     <h5>Recent History</h5>
 
-                    {histories.map(history => (
-                        <div key={history.id}>
+                    {histories.map((history, index) => (
+                        <div key={index}>
                             <div className={'card mt-3 shadow p-3 mb-3 bg-body rounded'}>
                                 <div className={'row g-0'}>
                                     <div className={'col-md-2'}>
@@ -92,8 +94,6 @@ export const History = () => {
                                             <h5 className={'card-title'}> {history.country} </h5>
                                             <h4> {history.name} </h4>
                                             <p className={'card-text'}> {history.description} </p>
-                                            <p> test </p>
-                                            <p className={'card-text'}> {history.id} </p>
                                             <hr/>
                                             <p className={'card-text'}> Checked out on: {history.checkoutDate} </p>
                                             <p className={'card-text'}> Returned on: {history.returnedDate} </p>
