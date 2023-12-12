@@ -19,7 +19,7 @@ export const MacguffinServices = () => {
                     <div className={'d-grid gap-2 justify-content-md-start mb4 mb-lg-3'}>
                         {authState?.isAuthenticated ?
                             <Link className={'btn main-color btn-lg text-white'}
-                                  type={'button'} to={'#'}
+                                  type={'button'} to={'/messages'}
                             >
                                 Macguffin Services
                             </Link>

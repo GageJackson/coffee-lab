@@ -22,6 +22,7 @@ public class MessageController {
     public void postMessage(@RequestHeader(value="Authorization") String token,
                             @RequestBody Message messageRequest) {
         String userEmail = ExtractJWT.payloadJWTExtraction(token, "\"sub\"");
+        System.out.println("messageRequest = ");
         messageService.postMessage(messageRequest, userEmail);
     }
 }

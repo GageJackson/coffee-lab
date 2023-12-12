@@ -1,6 +1,7 @@
 package com.macguffin.coffeelab.config;
 
 import com.macguffin.coffeelab.entity.Coffee;
+import com.macguffin.coffeelab.entity.Message;
 import com.macguffin.coffeelab.entity.Review;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.rest.core.config.RepositoryRestConfiguration;
@@ -23,9 +24,11 @@ public class MyDataRestConfig implements RepositoryRestConfigurer {
 
         config.exposeIdsFor(Coffee.class);
         config.exposeIdsFor(Review.class);
+        config.exposeIdsFor(Message.class);
 
         disableHttpMethods(Coffee.class, config, theUnsupportedActions);
         disableHttpMethods(Review.class, config, theUnsupportedActions);
+        disableHttpMethods(Message.class, config, theUnsupportedActions);
 
         /* Configure CORS mapping */
         cors.addMapping(config.getBasePath() + "/**")
