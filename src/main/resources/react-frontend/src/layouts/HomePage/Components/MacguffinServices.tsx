@@ -21,7 +21,7 @@ export const MacguffinServices = () => {
                             <Link className={'btn main-color btn-lg text-white'}
                                   type={'button'} to={'/messages'}
                             >
-                                Macguffin Services
+                                Macguffin Coffees
                             </Link>
                             :
                             <Link className={'btn main-color btn-lg text-white'}
